@@ -12,3 +12,10 @@ module "acr" {
 
   environment = var.environment
 }
+
+module "aks" {
+  source = "../../modules/aks"
+
+  environment  = "dev"
+  cluster_name = "dev-aks"
+}
