@@ -1,3 +1,7 @@
+variable "acr_id" {
+  description = "Azure container registery id to connect AKS cluster"
+}
+
 variable "cluster_name" {
   description = "Name of the AKS cluster"
   type        = string
@@ -9,8 +13,13 @@ variable "environment" {
 }
 
 variable "node_count" {
-  default = 2
+  default = 1
   type    = number
+}
+
+variable "subnet_id" {
+  description = "Subnet for aks cluster"
+  type        = string
 }
 
 variable "vm_size" {

@@ -18,4 +18,6 @@ module "aks" {
 
   environment  = "dev"
   cluster_name = "dev-aks"
+  acr_id       = module.acr.acr_id
+  subnet_id    = module.vnet.aks_subnet_id
 }
