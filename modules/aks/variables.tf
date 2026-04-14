@@ -13,7 +13,7 @@ variable "environment" {
 }
 
 variable "node_count" {
-  default = 1
+  default = 2
   type    = number
 }
 
