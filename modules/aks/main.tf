@@ -3,12 +3,12 @@ data "azurerm_resource_group" "dev_rg" {
 }
 
 resource "azurerm_kubernetes_cluster" "aks" {
-  name                = var.cluster_name
-  resource_group_name = data.azurerm_resource_group.dev_rg.name
-  location            = data.azurerm_resource_group.dev_rg.location
-  dns_prefix          = "${var.cluster_name}-dns"
+  name                              = var.cluster_name
+  resource_group_name               = data.azurerm_resource_group.dev_rg.name
+  location                          = data.azurerm_resource_group.dev_rg.location
+  dns_prefix                        = "${var.cluster_name}-dns"
   role_based_access_control_enabled = true # enable RBAC 
-  oidc_issuer_enabled = true
+  oidc_issuer_enabled               = true
 
   default_node_pool {
     name           = "system"
