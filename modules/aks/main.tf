@@ -14,7 +14,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     name           = "system"
     node_count     = var.node_count
     vm_size        = var.vm_size
-    vnet_subnet_id = var.subnet_id
+    vnet_subnet_id = var.services_subnet_id
   }
 
   identity {
@@ -23,7 +23,21 @@ resource "azurerm_kubernetes_cluster" "aks" {
 
   network_profile {
     network_plugin = "azure" # Azure CNI
+
+    service_cidr   = "172.16.0.0/16"
+    dns_service_ip = "172.16.0.10"
   }
+
+}
+
+resource "azurerm_kubernetes_cluster_node_pool" "app" {
+  name                  = "app"
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.aks.id
+  mode                  = "User"
+
+  node_count     = var.node_count
+  vm_size        = var.vm_size
+  vnet_subnet_id = var.app_subnet_id
 
 }
 

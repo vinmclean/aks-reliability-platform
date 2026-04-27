@@ -17,8 +17,13 @@ variable "node_count" {
   type    = number
 }
 
-variable "subnet_id" {
-  description = "Subnet for aks cluster"
+variable "services_subnet_id" {
+  description = "Subnet for k8 default cluster"
+  type        = string
+}
+
+variable "app_subnet_id" {
+  description = "Subnet for aks (app workload) cluster"
   type        = string
 }
 
