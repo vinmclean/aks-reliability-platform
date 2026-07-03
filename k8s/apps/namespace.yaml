@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: reliability-lab
+  labels:
+    app.kubernetes.io/part-of: aks-reliability-platform
+    environment: dev
