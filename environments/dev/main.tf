@@ -16,9 +16,9 @@ module "acr" {
 module "aks" {
   source = "../../modules/aks"
 
-  environment        = "dev"
-  cluster_name       = "dev-aks"
-  acr_id             = module.acr.acr_id
-  services_subnet_id = module.vnet.services_subnet_id
-  app_subnet_id      = module.vnet.aks_subnet_id
+  environment           = "dev"
+  cluster_name          = "dev-aks"
+  acr_id                = module.acr.acr_id
+  system_node_subnet_id = module.vnet.system_node_subnet_id
+  app_node_subnet_id    = module.vnet.app_node_subnet_id
 }

@@ -2,10 +2,10 @@ output "vnet_id" {
   value = azurerm_virtual_network.vnet.id
 }
 
-output "services_subnet_id" {
-  value = azurerm_subnet.services_subnet.id
+output "system_node_subnet_id" {
+  value = azurerm_subnet.system_node_subnet.id
 }
 
-output "aks_subnet_id" {
-  value = azurerm_subnet.aks_subnet.id
+output "app_node_subnet_id" {
+  value = azurerm_subnet.app_node_subnet.id
 }

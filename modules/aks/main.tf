@@ -14,7 +14,7 @@ resource "azurerm_kubernetes_cluster" "aks" {
     name           = "system"
     node_count     = var.node_count
     vm_size        = var.vm_size
-    vnet_subnet_id = var.services_subnet_id
+    vnet_subnet_id = var.system_node_subnet_id
   }
 
   identity {
@@ -37,7 +37,7 @@ resource "azurerm_kubernetes_cluster_node_pool" "app" {
 
   node_count     = var.node_count
   vm_size        = var.vm_size
-  vnet_subnet_id = var.app_subnet_id
+  vnet_subnet_id = var.app_node_subnet_id
 
 }
 
