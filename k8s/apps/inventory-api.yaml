@@ -60,7 +60,7 @@ metadata:
   name: inventory-api
   namespace: reliability-lab
 spec:
-  type: ClusterIP
+  type: LoadBalancer
   selector:
     app: inventory-api
   ports:
