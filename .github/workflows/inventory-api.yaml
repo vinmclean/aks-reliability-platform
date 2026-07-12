@@ -21,7 +21,7 @@ jobs:
             - name: Checkout repo
               uses: actions/checkout@v4
 
-            - name: Set up python
+            - name: Install python
               uses: actions/setup-python@v5
               with:
                 python-version: "3.11"
@@ -32,7 +32,9 @@ jobs:
                 pip install -r requirements.txt
                 pip install pytest
 
-            - name: Start up app
+            - name: Smoke Test - Start up app
               run: |
-                uvicorn main:app --reload --host 127.0.0.1 --port 8081
-                curl http://127.0.0.1:8081
+                uvicorn app.main:app --host 127.0.0.1 --port 8081 &
+                sleep 5
+                curl --fail http://127.0.0.1:8081/healthz
+                curl --fail http://127.0.0.1:8081/readyz
