@@ -45,5 +45,5 @@ jobs:
 
             - name: Build docker image
               run: |
-                docker build -t inventory-api-ci:${{github.sha}}
+                docker build -t inventory-api-ci:${{github.sha}} .
                 docker image ls
