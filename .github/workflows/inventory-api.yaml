@@ -1,16 +1,20 @@
 name: ci-inventory-api
 
 on:
-    workflow_dispatch:
     pull_request:
         branches:
             - main
     push:
         branches:
             - feature/github-actions-ci
+        paths:
+            - "apps/inventory-api/**"
+            - ".github/workflows/inventory-api.yaml"
+    
+    workflow_dispatch:
 
 jobs:
-    test:
+    build_and_test:
         runs-on: ubuntu-latest
 
         defaults:
