@@ -42,3 +42,8 @@ jobs:
                 sleep 5
                 curl --fail http://127.0.0.1:8081/healthz
                 curl --fail http://127.0.0.1:8081/readyz
+
+            - name: Build docker image
+              run: |
+                docker build -t inventory-api-ci:${{github.sha}}
+                docker image ls
