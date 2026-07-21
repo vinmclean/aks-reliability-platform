@@ -36,9 +36,12 @@ jobs:
               with:
                 terraform-version: "1.14.6"
 
-            # 3. Check for proper code formatting syntax
+            - name: Terraform init
+              run: terraform init -reconfigure -no-color -input=false
+
+                # 3. Check for proper code formatting syntax
             - name: Terraform destroy
-              run: terraform destroy -auto-approve -no-color
+              run: terraform destroy -auto-approve -no-color -input=false
 
             
 
