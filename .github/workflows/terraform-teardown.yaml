@@ -7,7 +7,7 @@ on:
 
         paths:
           - "environments/dev/**"
-          - ".github/workflows/terraform.yaml"
+          - ".github/workflows/terraform-teardown.yaml"
 
 jobs:
     teardown:
