@@ -1,0 +1,59 @@
+name: terraform-build
+
+on:
+    push:
+        branches: 
+          - feature/github-actions-ci
+
+        paths:
+          - "environments/dev/**"
+          - ".github/workflows/terraform.yaml"
+
+jobs:
+    build:
+        permissions:
+          id-token: write
+
+        runs-on: ubuntu-latest
+
+        defaults:
+          run:
+            working-directory: environments/dev
+        
+        steps:
+            - name: Checkout repo
+              uses: actions/checkout@v4
+
+            - name: Az CLI Login
+              uses: azure/login@v2
+              with:
+                client-id: ${{secrets.AZURE_CLIENT_ID}}
+                tenant-id: ${{secrets.AZURE_TENANT_ID}}
+                subscription-id: ${{secrets.AZURE_SUBSCRIPTION_ID}}
+
+            - name: Setup Terraform
+              uses: hashicorp/setup-terraform@v4
+              with:
+                terraform-version: "1.14.6"
+
+            # 3. Check for proper code formatting syntax
+            - name: Terraform Format Check
+              run: terraform fmt -check
+
+            # 4. Initialize the workspace and download provider plugins
+            - name: Terraform Init
+              run: terraform init
+
+            # 5. Validate the static syntax of your configuration files
+            - name: Terraform Validate
+              run: terraform validate
+
+            - name: Terraform Plan
+              run: terraform plan -no-color
+
+            - name: Terraform Apply
+              run: terraform apply -auto-approve -no-color
+
+            
+
+            
