@@ -7,19 +7,27 @@ on:
 
         paths:
           - "environments/dev/**"
-          - ".github/workflows/terraform.yaml"
+          - ".github/workflows/terraform-build.yaml"
+          - "modules/**"
+    
+    workflow_dispatch:
 
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  TF_WORKING_DIR: environments/dev
+      
 jobs:
-    build:
-        permissions:
-          id-token: write
-
+    terraform-plan:
+        name: Terraform Plan
         runs-on: ubuntu-latest
 
         defaults:
           run:
-            working-directory: environments/dev
-        
+            working-directory: ${{env.TF_WORKING_DIR}}
+
         steps:
             - name: Checkout repo
               uses: actions/checkout@v4
@@ -38,22 +46,25 @@ jobs:
 
             # 3. Check for proper code formatting syntax
             - name: Terraform Format Check
-              run: terraform fmt -check
+              run: terraform fmt -check -recursive
 
             # 4. Initialize the workspace and download provider plugins
             - name: Terraform Init
-              run: terraform init
+              run: terraform init -input=false
 
             # 5. Validate the static syntax of your configuration files
             - name: Terraform Validate
               run: terraform validate
 
             - name: Terraform Plan
-              run: terraform plan -no-color
+              run: terraform plan -no-color -input=false -out=tfplan
 
-            - name: Terraform Apply
-              run: terraform apply -auto-approve -no-color
+            - name: Display Terraform Plan
+              run: terraform show -no-color tfplan
 
-            
-
-            
+            - name: Upload Terraform Plan
+              uses: actions/upload-artifact@v4
+              with:
+                name: terraform-plan-${{github.run_id}}
+                path: ${{env.TF_WORKING_DIR}}/tfplan
+                retention-days: 1
