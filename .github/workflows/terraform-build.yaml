@@ -75,6 +75,7 @@ jobs:
       runs-on: ubuntu-latest
       needs: terraform-plan
 
+      #github repo environment; allow review/approval for tf apply
       environment: 
         name: terraform-dev
 
