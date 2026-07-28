@@ -9,13 +9,18 @@ on:
           - "environments/dev/**"
           - ".github/workflows/terraform-teardown.yaml"
 
+
+
 jobs:
     teardown:
         permissions:
           id-token: write
 
         runs-on: ubuntu-latest
-
+        
+        environment: 
+          name: terraform-dev
+        
         defaults:
           run:
             working-directory: environments/dev
