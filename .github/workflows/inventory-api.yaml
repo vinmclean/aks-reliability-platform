@@ -44,17 +44,14 @@ jobs:
                 curl --fail http://127.0.0.1:8081/healthz
                 curl --fail http://127.0.0.1:8081/readyz
 
-            - name: Build docker image
-              run: |
-                docker build -t inventory-api-ci:${{github.sha}} .
-                docker image ls
 
     build_image_push_to_acr:
       permissions:
         id-token: write
 
       runs-on: ubuntu-latest
-      
+      needs: build_and_test
+
       #github actions OIDC 
       environment: 
           name: terraform-plan
@@ -67,6 +64,9 @@ jobs:
         acr_name: "devACR674"
       
       steps:
+        - name: Checkout repo
+          uses: actions/checkout@v4
+
         - name: Az CLI Login
           uses: azure/login@v2
           with:
