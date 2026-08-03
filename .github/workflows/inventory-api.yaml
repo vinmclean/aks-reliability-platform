@@ -84,7 +84,7 @@ jobs:
 
         - name: Build image and push to acr
           run: |
-            docker build -t ${{env.acr_name}}.azurecr.io/inventory-api:${{github.run_id}}
+            docker build -t ${{env.acr_name}}.azurecr.io/inventory-api:${{github.run_id}} .
             docker image ls
             docker push ${{env.acr_name}}.io/inventory-api:${{github.run_id}}
             az acr repository list --name $acr_name --output table
