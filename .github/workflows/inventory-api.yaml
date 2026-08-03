@@ -13,6 +13,7 @@ on:
     
     workflow_dispatch:
 
+   
 jobs:
     build_and_test:
         runs-on: ubuntu-latest
@@ -48,11 +49,23 @@ jobs:
                 docker build -t inventory-api-ci:${{github.sha}} .
                 docker image ls
 
-    test_azure_connection:
+    build_image_push_to_acr:
       permissions:
         id-token: write
 
       runs-on: ubuntu-latest
+      
+      #github actions OIDC 
+      environment: 
+          name: terraform-plan
+      
+      defaults:
+        run:
+          working-directory: apps/inventory-api
+      
+      env:
+        acr_name: "devACR674"
+      
       steps:
         - name: Az CLI Login
           uses: azure/login@v2
@@ -61,9 +74,17 @@ jobs:
             tenant-id: ${{secrets.AZURE_TENANT_ID}}
             subscription-id: ${{secrets.AZURE_SUBSCRIPTION_ID}}
 
-        - name: Azure CLI script
+        - name: Azure ACR Login
           uses: azure/cli@v2
           with:
             azcliversion: latest
             inlineScript: |
-              az account show
+              az acr login --name $acr_name
+              az acr repository list --name $acr_name --output table
+
+        - name: Build image and push to acr
+          run: |
+            docker build -t ${{env.acr_name}}.azurecr.io/inventory-api:${{github.run_id}}
+            docker image ls
+            docker push ${{env.acr_name}}.io/inventory-api:${{github.run_id}}
+            az acr repository list --name $acr_name --output table
