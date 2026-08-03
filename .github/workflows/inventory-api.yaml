@@ -79,7 +79,7 @@ jobs:
           with:
             azcliversion: latest
             inlineScript: |
-              az acr login --name $acr_name
+              az acr login --name $acr_name --expose-token
               az acr repository list --name $acr_name --output table
 
         - name: Build image and push to acr
