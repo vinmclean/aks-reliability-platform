@@ -79,7 +79,7 @@ jobs:
 
         - name: Azure ACR Login
           run: |
-            az acr login --name "${{ env.ACR_NAME }}"
+            az acr login --name "${{ env.acr_name }}"
 
         - name: Build image and push to acr
           uses: docker/build-push-action@v7
