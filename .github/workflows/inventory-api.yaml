@@ -54,7 +54,7 @@ jobs:
 
       #github actions OIDC 
       environment: 
-          name: terraform-plan
+          name: application-dev
       
       defaults:
         run:
@@ -70,7 +70,7 @@ jobs:
         - name: Az CLI Login
           uses: azure/login@v2
           with:
-            client-id: ${{secrets.AZURE_CLIENT_ID}}
+            client-id: ${{secrets.AZURE_CLIENT_APP_ID}}
             tenant-id: ${{secrets.AZURE_TENANT_ID}}
             subscription-id: ${{secrets.AZURE_SUBSCRIPTION_ID}}
 
@@ -84,7 +84,7 @@ jobs:
 
         - name: Build image and push to acr
           run: |
-            docker build -t ${{env.acr_name}}.azurecr.io/inventory-api:${{github.run_id}} .
+            docker build -t ${{env.acr_name}}.azurecr.io/inventory-api:${{github.sha}} .
             docker image ls
-            docker push ${{env.acr_name}}.azurecr.io/inventory-api:${{github.run_id}}
+            docker push ${{env.acr_name}}.azurecr.io/inventory-api:${{github.sha}}
             az acr repository list --name ${{env.acr_name}} --output table
