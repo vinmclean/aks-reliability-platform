@@ -78,12 +78,8 @@ jobs:
             subscription-id: ${{secrets.AZURE_SUBSCRIPTION_ID}}
 
         - name: Azure ACR Login
-          uses: azure/cli@v2
-          with:
-            azcliversion: latest
-            inlineScript: |
-              az acr login --name "${{env.acr_name}}" --expose-token
-              az acr repository list --name "${{env.acr_name}}" --output table
+          run: |
+            az acr login --name "${{ env.ACR_NAME }}"
 
         - name: Build image and push to acr
           uses: docker/build-push-action@v7
