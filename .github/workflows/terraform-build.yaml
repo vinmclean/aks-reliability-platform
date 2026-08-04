@@ -24,7 +24,7 @@ jobs:
         name: Terraform Plan
         runs-on: ubuntu-latest
         
-        #github repo environment
+        #github repo environment skips the review/approval from github actions workflow
         environment: 
           name: terraform-plan
         
