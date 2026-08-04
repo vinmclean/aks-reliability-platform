@@ -20,3 +20,8 @@ variable "environment" {
 #   type        = list(string)
 
 # }
+
+variable "service_principal_id" {
+  description = "service principal objectId for acrPush role assignment"
+  type        = string
+}
