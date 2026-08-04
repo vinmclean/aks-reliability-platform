@@ -47,21 +47,24 @@ jobs:
 
     build_image_push_to_acr:
       permissions:
+        contents: read
         id-token: write
 
       runs-on: ubuntu-latest
       needs: build_and_test
-
-      #github actions OIDC 
-      environment: 
-          name: application-dev
       
       defaults:
         run:
           working-directory: apps/inventory-api
       
       env:
-        acr_name: "devACR674"
+        acr_name: devACR674
+        ACR_LOGIN_SERVER: devacr674.azurecr.io
+        IMAGE_NAME: inventory-api
+
+      #github actions OIDC 
+      environment: 
+          name: application-dev
       
       steps:
         - name: Checkout repo
@@ -79,12 +82,18 @@ jobs:
           with:
             azcliversion: latest
             inlineScript: |
-              az acr login --name $acr_name --expose-token
-              az acr repository list --name $acr_name --output table
+              az acr login --name "${{env.acr_name}}" --expose-token
+              az acr repository list --name "${{env.acr_name}}" --output table
 
         - name: Build image and push to acr
-          run: |
-            docker build -t ${{env.acr_name}}.azurecr.io/inventory-api:${{github.sha}} .
-            docker image ls
-            docker push ${{env.acr_name}}.azurecr.io/inventory-api:${{github.sha}}
-            az acr repository list --name ${{env.acr_name}} --output table
+          uses: docker/build-push-action@v7
+          with:
+            context: ./apps/inventory-api
+            push: true
+            tags: |
+              ${{env.ACR_LOGIN_SERVER}}/${{env.IMAGE_NAME}}:${{github.sha}}
+          # run: |
+          #   docker build -t ${{env.acr_name}}.azurecr.io/inventory-api:${{github.sha}} .
+          #   docker image ls
+          #   docker push ${{env.acr_name}}.azurecr.io/inventory-api:${{github.sha}}
+          #   az acr repository list --name ${{env.acr_name}} --output table
