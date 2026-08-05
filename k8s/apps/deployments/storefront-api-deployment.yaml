@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: inventory-api
+  name: storefront-api
   namespace: reliability-lab
   labels:
-    app: inventory-api
+    app: storefront-api
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: inventory-api
+      app: storefront-api
   template:
     metadata:
       labels:
-        app: inventory-api
+        app: storefront-api
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/path: /metrics
@@ -22,14 +22,16 @@ spec:
       nodeSelector:
         agentpool: app
       containers:
-        - name: inventory-api
-          image: devacr674.azurecr.io/inventory-api:v1
+        - name: storefront-api
+          image: devacr674.azurecr.io/storefront-api:IMAGE_TAG
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8080
           env:
+            - name: INVENTORY_URL
+              value: http://inventory-api:8080
             - name: OTEL_SERVICE_NAME
-              value: inventory-api
+              value: storefront-api
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: http://otel-collector.observability:4317
             - name: DEPLOYMENT_ENVIRONMENT
@@ -53,17 +55,3 @@ spec:
             limits:
               cpu: 500m
               memory: 256Mi
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: inventory-api
-  namespace: reliability-lab
-spec:
-  type: LoadBalancer
-  selector:
-    app: inventory-api
-  ports:
-    - name: http
-      port: 8080
-      targetPort: 8080
