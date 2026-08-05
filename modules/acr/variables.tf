@@ -5,5 +5,5 @@ variable "environment" {
 
 variable "service_principal_id" {
   description = "service principal objectId for acrPush role assignment"
-  type = string
+  type        = string
 }
