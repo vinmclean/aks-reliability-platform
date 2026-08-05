@@ -114,3 +114,34 @@ jobs:
 
         - name: Terraform Apply
           run: terraform apply -input=false tfplan
+    
+    bootstrap-kubernetes:
+      needs: terraform-apply
+      runs-on: ubuntu-latest
+      
+      environment:
+        name: terraform-dev
+      
+      defaults:
+        run:
+          working-directory: k8s/apps
+
+      steps:
+        - name: Checkout Repo
+          uses: actions/checkout@v4
+
+        - name: Az CLI Login
+          uses: azure/login@v3
+          with:
+            client-id: ${{secrets.AZURE_CLIENT_ID}}
+            tenant-id: ${{secrets.AZURE_TENANT_ID}}
+            subscription-id: ${{secrets.AZURE_SUBSCRIPTION_ID}}
+
+        - name: AKS credentials 
+          run: az aks get-credentials --name dev-aks --resource-group rg-aks-reliability-dev --overwrite-existing
+
+        - name: Apply K8s resources
+          run: |
+            kubectl apply -f namespace.yaml
+            kubectl apply -f services/inventory-api-service.yaml
+            kubectl apply -f services/storefront-api-service.yaml
