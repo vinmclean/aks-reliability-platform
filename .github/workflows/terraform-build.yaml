@@ -50,7 +50,7 @@ jobs:
 
             # 3. Check for proper code formatting syntax
             - name: Terraform Format Check
-              working-directory: .
+              working-directory: ${{github.workspace}}
               run: terraform fmt -check -recursive
               
 
