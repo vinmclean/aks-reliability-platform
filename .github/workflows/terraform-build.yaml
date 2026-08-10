@@ -50,8 +50,9 @@ jobs:
 
             # 3. Check for proper code formatting syntax
             - name: Terraform Format Check
+              working-directory: .
               run: terraform fmt -check -recursive
-              working-directory: aks-reliability-platform
+              
 
             # 4. Initialize the workspace and download provider plugins
             - name: Terraform Init
