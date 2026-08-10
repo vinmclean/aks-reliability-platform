@@ -125,7 +125,7 @@ jobs:
 
         - name: Render Kubernetes manifest
           run: |
-            sed "s|devacr674.azurecr.io/inventory-api:PLACEHOLDER|devacr674.azurecr.io/inventory-api:${IMAGE_TAG}|g" k8s/apps/deployments/inventory-api-deployment.yaml \
+            sed "s|devacr674.azurecr.io/inventory-api:PLACEHOLDER|devacr674.azurecr.io/inventory-api:${IMAGE_TAG}|g" inventory-api-deployment.yaml \
             > /tmp/inventory-api-deployment.yaml
         
         - name: Apply inventory-api
