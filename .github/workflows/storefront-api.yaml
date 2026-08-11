@@ -57,7 +57,7 @@ jobs:
 
       env:
         acr_name: devACR674
-        ACR_LOGIN_SERVER: devacr674.azureci.io
+        ACR_LOGIN_SERVER: devacr674.azurecr.io
         IMAGE_NAME: storefront-api
       
       #github actions OIDC 
