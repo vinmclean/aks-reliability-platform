@@ -18,6 +18,10 @@ permissions:
 
 env:
   TF_WORKING_DIR: environments/dev
+
+concurrency: 
+  group: aks-dev
+  cancel-in-progress: false
       
 jobs:
     terraform-plan:

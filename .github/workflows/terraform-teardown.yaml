@@ -9,6 +9,10 @@ on:
           - "environments/dev/**"
           - ".github/workflows/terraform-teardown.yaml"
 
+concurrency: 
+  group: aks-dev
+  cancel-in-progress: false
+
 jobs:
     teardown:
         permissions:
