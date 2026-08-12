@@ -1,14 +1,8 @@
 name: terraform-teardown
 
 on:
-    push:
-        branches: 
-          - feature/github-actions-ci
-
-        paths:
-          - "environments/dev/**"
-          - ".github/workflows/terraform-teardown.yaml"
-
+  workflow_dispatch:
+    
 concurrency: 
   group: aks-dev
   cancel-in-progress: false

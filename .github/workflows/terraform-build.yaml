@@ -1,6 +1,14 @@
 name: terraform-build
 
 on:
+    pull_request:
+        branches:
+          - main
+        paths:
+          - "environments/dev/**"
+          - ".github/workflows/terraform-build.yaml"
+          - "modules/**"
+
     push:
         branches: 
           - feature/github-actions-ci
@@ -78,8 +86,8 @@ jobs:
                 path: ${{env.TF_WORKING_DIR}}/tfplan
                 retention-days: 1
 
-
     terraform-apply:
+      if: github.event_name != 'pull_request'
       name: Terraform Apply
       runs-on: ubuntu-latest
       needs: terraform-plan
