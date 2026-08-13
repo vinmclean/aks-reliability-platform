@@ -8,3 +8,9 @@ resource "azurerm_container_registry" "acr" {
   location            = data.azurerm_resource_group.dev_rg.location
   sku                 = "Basic"
 }
+
+resource "azurerm_role_assignment" "acr_push" {
+  principal_id         = var.service_principal_id
+  scope                = azurerm_container_registry.acr.id
+  role_definition_name = "AcrPush"
+}

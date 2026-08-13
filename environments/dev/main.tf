@@ -8,9 +8,9 @@ module "vnet" {
 }
 
 module "acr" {
-  source = "../../modules/acr"
-
-  environment = var.environment
+  source               = "../../modules/acr"
+  environment          = var.environment
+  service_principal_id = var.service_principal_id
 }
 
 module "aks" {
