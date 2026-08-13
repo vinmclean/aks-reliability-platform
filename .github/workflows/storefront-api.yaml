@@ -10,7 +10,7 @@ on:
 
     push:
         branches:
-            - feature/github-actions-ci
+            - main
         paths:
             - "apps/storefront-api/**"
             - ".github/workflows/storefront-api.yaml"

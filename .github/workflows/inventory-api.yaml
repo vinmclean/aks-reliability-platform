@@ -10,7 +10,7 @@ on:
 
     push:
         branches:
-            - feature/github-actions-ci
+            - main
         paths:
             - "apps/inventory-api/**"
             - ".github/workflows/inventory-api.yaml"
