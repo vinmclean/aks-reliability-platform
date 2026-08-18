@@ -4,10 +4,6 @@ on:
     pull_request:
         branches:
           - main
-        paths:
-          - "environments/dev/**"
-          - ".github/workflows/terraform-build.yaml"
-          - "modules/**"
 
     push:
         branches: 
