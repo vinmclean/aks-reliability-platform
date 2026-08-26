@@ -28,7 +28,30 @@ concurrency:
   cancel-in-progress: false
       
 jobs:
+    detect_changes:
+      runs-on: ubuntu-latest
+
+      outputs:
+        terraform: ${{ steps.filter.outputs.terraform }}
+      steps:
+        - name: Checkout repo
+          uses: actions/checkout@v4
+
+        - name: Check for file changes
+          uses: dorny/paths-filter@v3
+          id: filter
+          with: 
+            filters: |
+              terraform:
+                - "environments/dev/**"
+                - ".github/workflows/terraform-build.yaml"
+                - "modules/**"
+
+
     terraform-plan:
+        needs: detect_changes
+        if: needs.detect_changes.outputs.terraform == 'true'
+
         name: Terraform Plan
         runs-on: ubuntu-latest
         
