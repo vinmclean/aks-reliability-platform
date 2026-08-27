@@ -3,10 +3,7 @@ name: ci-storefront-api
 on:
     pull_request:
         branches:
-          - main
-        paths:
-          - "apps/storefront-api/**"
-          - ".github/workflows/storefront-api.yaml"
+          - main       
 
     push:
         branches:
@@ -18,7 +15,28 @@ on:
     workflow_dispatch:
 
 jobs:
+    detect_changes:
+      runs-on: ubuntu-latest
+
+      outputs:
+        storefront: ${{ steps.filter.outputs.storefront }}
+      steps:
+        - name: Checkout repo
+          uses: actions/checkout@v4
+
+        - name: Check for file changes
+          uses: dorny/paths-filter@v3
+          id: filter
+          with: 
+            filters: |
+              storefront:
+                - "apps/storefront-api/**"
+                - ".github/workflows/storefront-api.yaml"
+
     start_and_test_app:
+        needs: detect_changes
+        if: needs.detect_changes.outputs.storefront == 'true'
+
         runs-on: ubuntu-latest
 
         defaults:
