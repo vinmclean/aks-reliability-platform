@@ -119,7 +119,8 @@ jobs:
               echo "Infrastructure is ready."
             else
               echo "ready=false" >> "$GITHUB_OUTPUT"
-              echo "Infrastructure is not ready. Skipping application deployment."
+              echo "Infrastructure is not ready. Run terraform-build first."
+              exit 1
             fi
 
     build_image_push_to_acr:
