@@ -67,11 +67,20 @@ FastAPIInstrumentor.instrument_app(app)
 @app.middleware("http")
 async def record_request_metrics(request, call_next):
     response = await call_next(request)
+
+    route = request.scope.get("route")
+
+    if route:
+        route_path = route.path
+    else:
+        route_path = "unknown"
+
     REQUESTS.labels(
-        route=request.url.path,
+        route=route_path,
         method=request.method,
         status=str(response.status_code),
     ).inc()
+
     return response
 
 
