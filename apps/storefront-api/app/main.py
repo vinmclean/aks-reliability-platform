@@ -1,8 +1,8 @@
+import asyncio
 import logging
 import os
 import random
 import time
-import asyncio
 from contextlib import asynccontextmanager
 
 import httpx
@@ -82,36 +82,48 @@ app = FastAPI(title="Storefront API", version="0.1.0", lifespan=lifespan)
 FastAPIInstrumentor.instrument_app(app)
 HTTPXClientInstrumentor().instrument()
 
+# Keep intentional lab scenarios visible as their own Prometheus route labels.
+# Ordinary dynamic IDs are normalized to the FastAPI route template.
+SPECIAL_METRIC_ROUTES = {
+    "/api/products/slow",
+    "/api/products/error",
+    "/api/checkout/empty",
+    "/api/error",
+}
+
+
+def get_metric_route(request):
+    path = request.url.path
+
+    if path in SPECIAL_METRIC_ROUTES:
+        return path
+
+    matched_route = request.scope.get("route")
+    if matched_route is not None:
+        return getattr(matched_route, "path", "unknown")
+
+    return "unknown"
+
 
 @app.middleware("http")
 async def record_request_metrics(request, call_next):
     started = time.perf_counter()
+    status_code = 500
 
-    response = await call_next(request)
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+        return response
+    finally:
+        duration = time.perf_counter() - started
+        route = get_metric_route(request)
 
-    duration = time.perf_counter() - started
-
-    # Use the FastAPI route template instead of the actual URL.
-    # Example:
-    # /api/products/123 -> /api/products/{product_id}
-    route = request.scope.get("route")
-
-    if route:
-        route_path = route.path
-    else:
-        route_path = "unknown"
-
-    REQUESTS.labels(
-        route=route_path,
-        method=request.method,
-        status=str(response.status_code),
-    ).inc()
-
-    LATENCY.labels(
-        route=route_path
-    ).observe(duration)
-
-    return response
+        REQUESTS.labels(
+            route=route,
+            method=request.method,
+            status=str(status_code),
+        ).inc()
+        LATENCY.labels(route=route).observe(duration)
 
 
 @app.get("/healthz")
@@ -133,12 +145,38 @@ async def metrics():
 async def get_product(product_id: str):
     with tracer.start_as_current_span("lookup_product") as span:
         span.set_attribute("product.id", product_id)
-        inventory = await app.state.http.get(f"{INVENTORY_URL}/api/inventory/{product_id}")
+
+        try:
+            inventory = await app.state.http.get(
+                f"{INVENTORY_URL}/api/inventory/{product_id}"
+            )
+        except httpx.RequestError as exc:
+            logger.error(
+                "inventory dependency request failed product_id=%s error=%s",
+                product_id,
+                exc,
+            )
+            raise HTTPException(
+                status_code=502,
+                detail="inventory dependency unavailable",
+            ) from exc
 
     if inventory.status_code == 404:
         raise HTTPException(status_code=404, detail="product not found")
 
+    if inventory.status_code >= 500:
+        logger.error(
+            "inventory dependency failed product_id=%s status=%s",
+            product_id,
+            inventory.status_code,
+        )
+        raise HTTPException(
+            status_code=502,
+            detail="inventory dependency failed",
+        )
+
     inventory.raise_for_status()
+
     return {
         "id": product_id,
         "name": f"demo-product-{product_id}",
