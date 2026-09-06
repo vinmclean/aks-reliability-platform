@@ -85,13 +85,32 @@ HTTPXClientInstrumentor().instrument()
 
 @app.middleware("http")
 async def record_request_metrics(request, call_next):
-    route = request.url.path
     started = time.perf_counter()
+
     response = await call_next(request)
+
     duration = time.perf_counter() - started
 
-    REQUESTS.labels(route=route, method=request.method, status=str(response.status_code)).inc()
-    LATENCY.labels(route=route).observe(duration)
+    # Use the FastAPI route template instead of the actual URL.
+    # Example:
+    # /api/products/123 -> /api/products/{product_id}
+    route = request.scope.get("route")
+
+    if route:
+        route_path = route.path
+    else:
+        route_path = "unknown"
+
+    REQUESTS.labels(
+        route=route_path,
+        method=request.method,
+        status=str(response.status_code),
+    ).inc()
+
+    LATENCY.labels(
+        route=route_path
+    ).observe(duration)
+
     return response
 
 
