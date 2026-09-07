@@ -142,7 +142,14 @@ async def metrics():
 
 
 @app.get("/api/products/{product_id}")
-async def get_product(product_id: str):
+async def get_product(product_id: str, fail: bool = False):
+    if fail:
+        logger.error("simulated storefront product failure product_id=%s", product_id)
+        raise HTTPException(
+            status_code=500,
+            detail="simulated storefront product failure",
+        )
+
     with tracer.start_as_current_span("lookup_product") as span:
         span.set_attribute("product.id", product_id)
 
@@ -185,7 +192,15 @@ async def get_product(product_id: str):
 
 
 @app.post("/api/checkout/{product_id}")
-async def checkout(product_id: str):
+async def checkout(product_id: str, fail: bool = False):
+    if fail:
+        CHECKOUTS.labels(result="failed").inc()
+        logger.error("simulated checkout failure product_id=%s", product_id)
+        raise HTTPException(
+            status_code=500,
+            detail="simulated checkout failure",
+        )
+
     product = await get_product(product_id)
 
     if product["inventory"]["available"] <= 0:
@@ -203,9 +218,17 @@ async def checkout(product_id: str):
 
 
 @app.get("/api/slow")
-async def slow():
+async def slow(fail: bool = False):
     delay = random.uniform(0.5, 2.5)
     await asyncio.sleep(delay)
+
+    if fail:
+        logger.error("simulated slow-route failure delay_seconds=%.3f", delay)
+        raise HTTPException(
+            status_code=500,
+            detail="simulated slow endpoint failure",
+        )
+
     return {"delay_seconds": round(delay, 3)}
 
 
