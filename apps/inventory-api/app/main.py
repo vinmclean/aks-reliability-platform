@@ -119,7 +119,7 @@ async def metrics():
 
 
 @app.get("/api/inventory/{product_id}")
-async def inventory(product_id: str):
+async def inventory(product_id: str, fail: bool = False):
     started = time.perf_counter()
 
     if product_id == "404":
@@ -131,11 +131,11 @@ async def inventory(product_id: str):
     if product_id == "slow":
         await asyncio.sleep(1.2)
 
-    # Keep the explicit lab scenarios deterministic. "slow" should stay a
-    # latency scenario and "empty" should stay an out-of-stock scenario.
-    forced_error = product_id == "error"
+    forced_error = product_id == "error" or fail
+
     random_error = (
         product_id not in {"slow", "empty"}
+        and not fail
         and random.random() < float(os.getenv("INVENTORY_ERROR_RATE", "0.02"))
     )
 
